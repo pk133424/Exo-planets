@@ -44,6 +44,11 @@ func (h handler) AddExoplanet(w http.ResponseWriter, r *http.Request) {
 		ErrorHandler(http.StatusBadRequest, "Validation Error", w)
 		return
 	}
+	if exoplanet.Type == model.Terrestrial && exoplanet.Mass == nil {
+		log.Error().Err(err).Msg("AddExoplanet - Mass is required.")
+		ErrorHandler(http.StatusBadRequest, "Validation Error", w)
+		return
+	}
 	exoplanet.ID = uuid.New()
 	err = validator.New().Struct(exoplanet)
 	if err != nil {
@@ -115,6 +120,11 @@ func (h handler) UpdateExoplanet(w http.ResponseWriter, r *http.Request) {
 	}
 	if !model.IsValidType(exoplanet.Type) {
 		log.Error().Err(err).Msg("UpdateExoplanet - Invalid Type")
+		ErrorHandler(http.StatusBadRequest, "Validation Error", w)
+		return
+	}
+	if exoplanet.Type == model.Terrestrial && exoplanet.Mass == nil {
+		log.Error().Err(err).Msg("UpdateExoplanet - Mass is required.")
 		ErrorHandler(http.StatusBadRequest, "Validation Error", w)
 		return
 	}
